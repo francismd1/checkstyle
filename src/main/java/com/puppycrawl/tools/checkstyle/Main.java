@@ -293,7 +293,9 @@ public final class Main {
     private static int runCli(CliOptions options, List<File> filesToProcess)
             throws IOException, CheckstyleException {
         int result = 0;
-        final boolean hasSuppressionLineColumnNumber = options.suppressionLineColumnNumber != null;
+        final boolean hasSuppressionLineColumnNumber =
+            options.suppressionLineColumnNumber != null;
+        final boolean hasXpath = Objects.nonNull(options.xpath);
 
         // create config helper object
         if (options.printAst) {
@@ -303,7 +305,7 @@ public final class Main {
                     JavaParser.Options.WITHOUT_COMMENTS);
             System.out.print(stringAst);
         }
-        else if (Objects.nonNull(options.xpath)) {
+        else if (hasXpath) {
             final String branch =
                     XpathUtil.printXpathBranch(options.xpath, filesToProcess.getFirst());
             System.out.print(branch);

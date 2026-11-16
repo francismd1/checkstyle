@@ -164,12 +164,44 @@ public class SuppressFilterElement implements Filter {
      * @return true if it is matching
      */
     private boolean isFileNameAndModuleNameMatching(AuditEvent event) {
-        return event.getFileName() != null
-                && (fileRegexp == null || isFileMatch(event.getFileName()))
-                && event.getViolation() != null
-                && (moduleId == null || moduleId.equals(event.getModuleId()))
-                && (checkRegexp == null || checkRegexp.matcher(event.getSourceName()).find());
+        return isFileNameMatching(event)
+                && isModuleIdMatching(event)
+                && isCheckNameMatching(event);
     }
+
+    /**
+     * Checks whether the event matches the configured file name.
+     *
+     * @param event event
+     * @return true if the file name matches
+     */
+    private boolean isFileNameMatching(AuditEvent event) {
+        return event.getFileName() != null
+                && (fileRegexp == null || isFileMatch(event.getFileName()));
+    }
+
+    /**
+     * Checks whether the event matches the configured module ID.
+     *
+     * @param event event
+     * @return true if the module ID matches
+     */
+    private boolean isModuleIdMatching(AuditEvent event) {
+        return event.getViolation() != null
+                && (moduleId == null || moduleId.equals(event.getModuleId()));
+    }
+
+    /**
+     * Checks whether the event matches the configured check name.
+     *
+     * @param event event
+     * @return true if the check name matches
+     */
+    private boolean isCheckNameMatching(AuditEvent event) {
+        return checkRegexp == null
+                || checkRegexp.matcher(event.getSourceName()).find();
+    }
+
 
     /**
      * Checks if the given file name matches the file regexp.

@@ -374,17 +374,12 @@ public class CustomImportOrderCheck extends AbstractCheck {
             final String fullImportIdent = importObject.importFullPath();
 
             if (importGroup.equals(currentGroup)) {
-                validateExtraEmptyLine(previousImportObjectFromCurrentGroup,
-                        importObject, fullImportIdent);
-                if (isAlphabeticalOrderBroken(previousImportFromCurrentGroup, fullImportIdent)) {
-                    log(importObject.importAST(), MSG_LEX,
-                            fullImportIdent, previousImportFromCurrentGroup);
-                }
-                else {
-                    previousImportFromCurrentGroup = fullImportIdent;
-                }
+                previousImportFromCurrentGroup = processCurrentImportGroup(
+                        previousImportObjectFromCurrentGroup, importObject,
+                        previousImportFromCurrentGroup, fullImportIdent);
                 previousImportObjectFromCurrentGroup = importObject;
             }
+
             else {
                 // not the last group, last one is always NON_GROUP
                 if (customImportOrderRules.size() > currentGroupNumber + 1) {
@@ -408,6 +403,32 @@ public class CustomImportOrderCheck extends AbstractCheck {
                 }
             }
         }
+    }
+
+    /**
+     * Processes an import that belongs to the current group.
+     *
+     * @param previousImportObject previous import object
+     * @param importObject current import object
+     * @param previousImport previous import path
+     * @param fullImportIdent current import path
+     * @return current import path for the next comparison
+     */
+        private String processCurrentImportGroup(
+            ImportDetails previousImportObject,
+            ImportDetails importObject,
+            String previousImport,
+            String fullImportIdent) {
+        validateExtraEmptyLine(previousImportObject, importObject, fullImportIdent);
+
+        if (isAlphabeticalOrderBroken(previousImport, fullImportIdent)) {
+            log(importObject.importAST(), MSG_LEX, fullImportIdent, previousImport);
+        }
+        else {
+            previousImport = fullImportIdent;
+        }
+
+        return previousImport;
     }
 
     /**
